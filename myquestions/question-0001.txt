@@ -1,1 +1,50 @@
-aqui irá la pregunta 1 
+El Problema:
+
+En problemas de clasificación binaria con variables categóricas de alta cardinalidad, usar One-Hot Encoding puede generar demasiadas columnas y volver el modelo menos eficiente.
+Una alternativa común es el target encoding, que reemplaza cada categoría por la media de la variable objetivo observada para esa categoría.
+Sin embargo, hacerlo sobre todo el dataset a la vez produce data leakage. Por eso, necesitas implementar una evaluación correcta usando codificación por folds.
+
+Tu Misión:
+
+Escribe una función llamada evaluar_target_encoding(df, cat_col, target_col, n_splits=4) que realice lo siguiente:
+
+1. Reciba un DataFrame de pandas df que contiene:
+   - una columna categórica cat_col
+   - una columna objetivo binaria target_col
+   - una o más columnas numéricas adicionales
+
+2. Use StratifiedKFold de sklearn con:
+   - n_splits=n_splits
+   - shuffle=True
+   - random_state=42
+
+3. Para cada fold:
+   - tome el subconjunto de entrenamiento
+   - calcule, usando pandas, la media de target_col por cada categoría de cat_col
+   - codifique la columna categórica del entrenamiento y la validación con esas medias
+   - si en validación aparece una categoría no vista en entrenamiento, reemplácela por la media global de target_col en el fold de entrenamiento
+   - construya las matrices de características usando:
+     - todas las columnas numéricas originales excepto target_col
+     - una nueva columna numérica con el target encoding de cat_col
+   - entrene un modelo LogisticRegression(max_iter=1000)
+   - calcule el roc_auc_score sobre el fold de validación usando las probabilidades predichas para la clase positiva
+
+4. Devuelva un diccionario con exactamente estas claves:
+   - "auc_promedio": float con el promedio de los ROC-AUC de todos los folds
+   - "auc_por_fold": np.ndarray de forma (n_splits,) con los ROC-AUC de cada fold
+   - "n_categorias": int con el número de categorías únicas de cat_col en df
+
+Argumentos:
+- df (pd.DataFrame)
+- cat_col (str)
+- target_col (str)
+- n_splits (int, por defecto 4)
+
+Retorna:
+- dict
+
+Restricciones:
+- Debes usar pandas, numpy y sklearn
+- Debes usar StratifiedKFold
+- Debes evitar data leakage
+- No uses OneHotEncoder ni get_dummies
