@@ -1,1 +1,43 @@
+El Problema:
 
+En clasificación binaria, a veces no basta con calcular una métrica global. También interesa saber si el modelo concentra más casos positivos en los registros con mayor score. Para eso se usa una tabla de lift por grupos de score.
+
+Tu Misión:
+
+Escribe una función llamada evaluar_lift_por_deciles(df, score_col, target_col, n_bins=5) que:
+
+1. Reciba un DataFrame de pandas con:
+   - una columna numérica de scores o probabilidades definida por score_col
+   - una columna objetivo binaria definida por target_col
+
+2. Divida los registros en n_bins grupos de igual frecuencia usando pd.qcut sobre score_col. Si hay bordes repetidos, debe usar duplicates="drop".
+
+3. Para cada grupo, calcule:
+   - número de registros
+   - tasa de positivos
+   - lift, definido como:
+     tasa_positivos_del_grupo / tasa_positivos_global
+
+4. Ordene los grupos desde los scores más altos hasta los más bajos.
+
+5. Calcule además el roc_auc_score usando score_col como score y target_col como variable real.
+
+6. Devuelva un diccionario con:
+   - "tabla_lift": pd.DataFrame con las columnas ["segmento", "score_min", "score_max", "n", "tasa_positivos", "lift"]
+   - "auc": float con el ROC-AUC
+   - "n_segmentos": int con el número final de segmentos generados
+
+Argumentos:
+- df (pd.DataFrame)
+- score_col (str)
+- target_col (str)
+- n_bins (int, por defecto 5)
+
+Retorna:
+- dict
+
+Restricciones:
+- Debes usar pandas, numpy y sklearn
+- Debes usar pd.qcut
+- Debes usar roc_auc_score de sklearn.metrics
+- No uses loops por filas

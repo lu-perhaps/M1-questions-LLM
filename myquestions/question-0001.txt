@@ -1,42 +1,34 @@
 El Problema:
 
-En problemas de clasificación binaria con variables categóricas de alta cardinalidad, usar One-Hot Encoding puede generar demasiadas columnas y volver el modelo menos eficiente.
-Una alternativa común es el target encoding, que reemplaza cada categoría por la media de la variable objetivo observada para esa categoría.
-Sin embargo, hacerlo sobre todo el dataset a la vez produce data leakage. Por eso, necesitas implementar una evaluación correcta usando codificación por folds.
+En muchos datasets, varias filas pertenecen al mismo cliente, paciente o dispositivo. Si esas filas se reparten entre entrenamiento y validación, el modelo puede parecer mejor de lo que realmente es. 
+Para evitar eso, necesitas evaluar un clasificador separando los datos por grupos.
 
 Tu Misión:
 
-Escribe una función llamada evaluar_target_encoding(df, cat_col, target_col, n_splits=4) que realice lo siguiente:
+Escribe una función llamada evaluar_modelo_por_grupos(df, group_col, target_col, n_splits=4) que:
 
-1. Reciba un DataFrame de pandas df que contiene:
-   - una columna categórica cat_col
-   - una columna objetivo binaria target_col
-   - una o más columnas numéricas adicionales
+1. Reciba un DataFrame de pandas con:
+   - una columna de grupos definida por group_col
+   - una columna objetivo binaria definida por target_col
+   - una o más columnas numéricas predictoras
 
-2. Use StratifiedKFold de sklearn con:
-   - n_splits=n_splits
-   - shuffle=True
-   - random_state=42
+2. Separe las características X y la variable objetivo y, excluyendo de X las columnas group_col y target_col.
 
-3. Para cada fold:
-   - tome el subconjunto de entrenamiento
-   - calcule, usando pandas, la media de target_col por cada categoría de cat_col
-   - codifique la columna categórica del entrenamiento y la validación con esas medias
-   - si en validación aparece una categoría no vista en entrenamiento, reemplácela por la media global de target_col en el fold de entrenamiento
-   - construya las matrices de características usando:
-     - todas las columnas numéricas originales excepto target_col
-     - una nueva columna numérica con el target encoding de cat_col
+3. Use GroupKFold de sklearn con n_splits=n_splits para generar los folds, asegurando que las filas del mismo grupo nunca queden repartidas entre train y validación.
+
+4. En cada fold:
    - entrene un modelo LogisticRegression(max_iter=1000)
-   - calcule el roc_auc_score sobre el fold de validación usando las probabilidades predichas para la clase positiva
+   - realice predicciones sobre el fold de validación
+   - calcule el accuracy del fold
 
-4. Devuelva un diccionario con exactamente estas claves:
-   - "auc_promedio": float con el promedio de los ROC-AUC de todos los folds
-   - "auc_por_fold": np.ndarray de forma (n_splits,) con los ROC-AUC de cada fold
-   - "n_categorias": int con el número de categorías únicas de cat_col en df
+5. Devuelva un diccionario con:
+   - "accuracy_promedio": float con el promedio de accuracy de todos los folds
+   - "accuracy_por_fold": np.ndarray con los accuracy de cada fold
+   - "n_grupos": int con el número de grupos únicos en group_col
 
 Argumentos:
 - df (pd.DataFrame)
-- cat_col (str)
+- group_col (str)
 - target_col (str)
 - n_splits (int, por defecto 4)
 
@@ -45,6 +37,5 @@ Retorna:
 
 Restricciones:
 - Debes usar pandas, numpy y sklearn
-- Debes usar StratifiedKFold
-- Debes evitar data leakage
-- No uses OneHotEncoder ni get_dummies
+- Debes usar GroupKFold
+- Solo debes usar como features las columnas numéricas distintas de group_col y target_col

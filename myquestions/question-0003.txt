@@ -1,1 +1,46 @@
+El Problema:
 
+En analítica operativa no solo importa detectar faltantes, sino también cambios bruscos en una métrica respecto a su comportamiento reciente. Esto ayuda a identificar eventos anómalos que no se ven comparando solo contra un valor fijo.
+
+Tu Misión:
+
+Escribe una función llamada detectar_saltos_anomalos(df, grupo_col, fecha_col, valor_col, ventana=3, umbral=2.0) que:
+
+1. Reciba un DataFrame de pandas con:
+   - una columna de grupo definida por grupo_col
+   - una columna de fecha definida por fecha_col
+   - una columna numérica definida por valor_col
+
+2. Convierta fecha_col a datetime y ordene el DataFrame por grupo_col y fecha_col.
+
+3. Para cada grupo, calcule el promedio móvil de los últimos ventana valores anteriores de valor_col, sin incluir el valor actual.
+
+4. Calcule una nueva columna llamada desviacion_relativa definida como:
+   abs(valor_actual - promedio_movil) / abs(promedio_movil)
+
+5. Marque una fila como anomalía cuando:
+   - exista promedio_movil válido
+   - desviacion_relativa > umbral
+
+6. Devuelva un DataFrame con las mismas columnas originales más:
+   - "promedio_movil"
+   - "desviacion_relativa"
+   - "es_anomalia"
+
+7. El resultado debe quedar ordenado por grupo_col y fecha_col, con índice reiniciado.
+
+Argumentos:
+- df (pd.DataFrame)
+- grupo_col (str)
+- fecha_col (str)
+- valor_col (str)
+- ventana (int, por defecto 3)
+- umbral (float, por defecto 2.0)
+
+Retorna:
+- pd.DataFrame
+
+Restricciones:
+- Debes usar pandas y numpy
+- No uses loops por filas
+- Debes usar operaciones vectorizadas, rolling, shift o groupby

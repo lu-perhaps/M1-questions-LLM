@@ -1,1 +1,41 @@
+El Problema:
 
+Después de entrenar un modelo, no siempre es claro cómo cambian las predicciones al variar una variable específica. Para entender esto, se pueden usar Partial Dependence Plots (PDP), que muestran el efecto promedio de una variable sobre la predicción del modelo.
+
+Tu Misión:
+
+Escribe una función llamada calcular_dependencia_parcial(df, target_col, feature_objetivo, grid_size=10) que:
+
+1. Reciba un DataFrame de pandas con:
+   - una columna objetivo binaria definida por target_col
+   - varias columnas numéricas predictoras
+
+2. Separe X y y usando solo columnas numéricas distintas de target_col.
+
+3. Entrene un modelo RandomForestClassifier(n_estimators=100, random_state=42) usando todo el dataset.
+
+4. Genere una grilla de valores para feature_objetivo usando np.linspace entre su mínimo y máximo con grid_size puntos.
+
+5. Para cada valor de la grilla:
+   - reemplace esa variable en todo el dataset por el valor fijo
+   - calcule la predicción promedio (probabilidad de clase 1)
+
+6. Devuelva un diccionario con:
+   - "valores_feature": np.ndarray con los valores de la grilla
+   - "predicciones_promedio": np.ndarray con las predicciones promedio correspondientes
+   - "nombre_feature": str con el nombre de la variable analizada
+
+Argumentos:
+- df (pd.DataFrame)
+- target_col (str)
+- feature_objetivo (str)
+- grid_size (int, por defecto 10)
+
+Retorna:
+- dict
+
+Restricciones:
+- Debes usar pandas, numpy y sklearn
+- Debes usar RandomForestClassifier
+- No uses funciones automáticas de PDP de sklearn
+- Debes implementar la lógica manualmente
